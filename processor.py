@@ -4,13 +4,14 @@ from task import Task
 
 class Processor(Thread):
     """docstring for Processor"""
-    def __init__(self, id, *args, **kwargs):
+    def __init__(self, id, additional_work = None, *args, **kwargs):
         super(Processor, self).__init__(*args, **kwargs)
         self.__performance = 1
         self.__current_task = None
         self.__force_stop = False
         self.__id = id
         self.__processed_tasks_number = 0
+        self.__additional_work = additional_work
 
     @property
     def id(self): return self.__id
@@ -45,6 +46,10 @@ class Processor(Thread):
     def run(self):
         while not self.__force_stop:
             sleep(0.001)
+            
+            if self.__additional_work:
+                self.__additional_work()
+
             if not self.task:
                 continue
 

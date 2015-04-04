@@ -6,18 +6,20 @@ from random import randint
 import thread
 from task_scheduler import FifoTaskScheduler
 
-PROCESSORS_NUMBER = 10
+PROCESSORS_NUMBER = 5
 PROCESSORS = []
-MIN_PERFORMANCE = 5  # ms
-MAX_PERFORMANCE = 200 # ms
+MIN_EXPECTED_TIME_TO_PROCESS = 10  # ms
+MAX_EXPECTED_TIME_TO_PROCESS = 200 # ms
+MIN_PERFORMANCE = 100 # operations per 1 ms
+MAX_PERFORMANCE = 20000 # operations per 1 ms
 TEST_TIME = 10
 FINISH = False
 
 task_queue = TaskQueue()
 
 def generate_tasks(interval, task_queue):
-    global FINISH, PROCESSORS, MIN_PERFORMANCE, MAX_PERFORMANCE
-    _taskGenerator = TaskGenerator(MIN_PERFORMANCE, MAX_PERFORMANCE, PROCESSORS)
+    global FINISH, PROCESSORS, MIN_EXPECTED_TIME_TO_PROCESS, MAX_EXPECTED_TIME_TO_PROCESS
+    _taskGenerator = TaskGenerator(MIN_EXPECTED_TIME_TO_PROCESS, MAX_EXPECTED_TIME_TO_PROCESS, PROCESSORS)
     while not FINISH:
         sleep(interval)
         if randint(0, 1):
@@ -29,9 +31,11 @@ def schedule_tasks(interval, scheduler):
         sleep(interval)
         scheduler.schedule_next_task()
 
+def additional_work():
+    pass
 
 for i in xrange(PROCESSORS_NUMBER):
-    _processor = Processor(i)
+    _processor = Processor(i, additional_work=additional_work)
     _processor.performance = randint(MIN_PERFORMANCE, MAX_PERFORMANCE)
     _processor.start()
     PROCESSORS.append(_processor)
