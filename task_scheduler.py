@@ -35,16 +35,10 @@ class FifoTaskScheduler(TaskScheduler):
         _top_task = self.task_queue.tasks[0]
 
         for processor_id in _top_task.processor_ids:
-            if self.processors_map[processor_id].task:
-                return
-
-        _task = self.task_queue.front()
-        for processor_id in _task.processor_ids:
-        #for p in self.processors:
-            try:
-                self.processors_map[processor_id].task = copy.copy(_task)
-            except Exception, e:
-                self.task_queue.append(_task)
-                print e
-                return
+            if not self.processors_map[processor_id].task:
+                try:
+                    self.processors_map[processor_id].task = self.task_queue.front()
+                    return
+                except Exception, e:
+                    print e
         

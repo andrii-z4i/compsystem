@@ -32,12 +32,15 @@ def schedule_tasks(interval, scheduler):
         scheduler.schedule_next_task()
 
 def additional_work(processor):
+    sleep(0.001)
+
     if not processor.task:
         return
 
-    processor.task.complexity -= processor.performance
-    if processor.task.complexity < 0:
+    processor.remaining_work -= processor.performance
+    if processor.remaining_work < 0:
         processor.processed_tasks_number += 1
+        processor.performed_operations += processor.task.complexity
         processor.task = None
 
 for i in xrange(PROCESSORS_NUMBER):
@@ -57,9 +60,12 @@ FINISH = True
 print len(task_queue.tasks)
 
 processed_tasks_number = 0
+performed_operations = 0
 for processor in PROCESSORS:
     processor.force_stop()
     processed_tasks_number += processor.processed_tasks_number
+    performed_operations += processor.performed_operations
 
 print processed_tasks_number
+print performed_operations
 sleep(0.001)

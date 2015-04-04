@@ -12,6 +12,8 @@ class Processor(Thread):
         self.__id = id
         self.__processed_tasks_number = 0
         self.__additional_work = additional_work
+        self.__performed_operations = 0
+        self.__remaining_work = 0
 
     @property
     def id(self): return self.__id
@@ -41,14 +43,25 @@ class Processor(Thread):
             raise Exception("Task can't be assigned for this processor")
         else:
             self.__current_task = value
+            self.remaining_work = value.complexity
+
+    @property
+    def performed_operations(self): return self.__performed_operations
+
+    @performed_operations.setter
+    def performed_operations(self, value): self.__performed_operations = value
+
+    @property
+    def remaining_work(self): return self.__remaining_work
+
+    @remaining_work.setter
+    def remaining_work(self, value): self.__remaining_work = value
 
     def force_stop(self):
         self.__force_stop = True
 
     def run(self):
         while not self.__force_stop:
-            sleep(0.001)
-            
             if self.__additional_work:
                 self.__additional_work(self)
             
